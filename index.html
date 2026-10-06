@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Наївний баєсів класифікатор</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <h1>Наївний баєсів класифікатор, навчений у Python</h1>
@@ -24,6 +25,7 @@
         function processTweet(tweet) {
             return tweet.toLowerCase().split(' ');
         }
+
 
         function naiveBayesPredict(tweet, logprior, loglikelihood) {
             const words = processTweet(tweet);
