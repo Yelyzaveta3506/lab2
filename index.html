@@ -26,7 +26,6 @@
             return tweet.toLowerCase().split(' ');
         }
 
-
         function naiveBayesPredict(tweet, logprior, loglikelihood) {
             const words = processTweet(tweet);
             let p = logprior;
