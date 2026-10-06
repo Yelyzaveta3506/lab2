@@ -19,7 +19,7 @@
         fetch('naive_bayes_model.json')
             .then(response => response.json())
             .then(data => { model = data; });
-
+ 
         // Аналог process_review з Python
         function processReview(text) {
             const stop = new Set(model.stopwords);
