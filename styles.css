@@ -6,10 +6,11 @@ body {
             margin: 40px auto;
             padding: 0 16px;
         }
-        h1 { 
+h1 { 
             font-size: 1.6rem; 
         }
-        textarea {
+        
+textarea {
             width: 100%;
             box-sizing: border-box;
             padding: 12px;
@@ -17,7 +18,8 @@ body {
             border: 1px solid #ced5ce;
             border-radius: 8px;
         }
-        button {
+        
+button {
             margin-top: 12px;
             padding: 10px 20px;
             font: inherit;
@@ -27,6 +29,10 @@ body {
             border-radius: 8px;
             cursor: pointer;
         }
-        #result { margin-top: 16px; font-size: 1.2rem; font-weight: 600; }
-        .pos { color: #1f8a5b; }
-        .neg { color: #c2362f; }
+        
+#result { 
+            margin-top: 16px; 
+            font-size: 1.2rem; 
+            font-weight: 600; 
+        }
+        
