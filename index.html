@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Наївний баєсів класифікатор рецензій</title>
+</head>
+<body>
+    <h1>Наївний баєсів класифікатор, навчений у Python</h1>
+    <p>Введіть рецензію на фільм англійською мовою:</p>
+    <textarea id="reviewInput" rows="8" cols="70"></textarea><br>
+    <button id="classifyBtn">Визначити тональність</button>
+    <p id="result"></p>
+
+    <script type="module">
+        import { stemmer } from 'https://cdn.jsdelivr.net/npm/stemmer@2.0.1/+esm';
+
+        let model = null;
+
+        fetch('naive_bayes_model.json')
+            .then(response => response.json())
+            .then(data => { model = data; });
+
+        // Аналог process_review з Python
+        function processReview(text) {
+            const stop = new Set(model.stopwords);
+            return text
+                .toLowerCase()
+                .replace(/[’‘]/g, "'")
+                .replace(/https?:\/\/\S+/g, ' ')
+                .replace(/[^a-z'\- ]+/g, ' ')
+                .split(/\s+/)
+                .filter(w => /[a-z]/.test(w) && !stop.has(w))
+                .map(w => stemmer(w));
+        }
+
+        // Аналог naive_bayes_predict з Python
+        function naiveBayesPredict(text) {
+            let p = model.logprior;
+            for (const word of processReview(text)) {
+                if (Object.prototype.hasOwnProperty.call(model.loglikelihood, word)) {
+                    p += model.loglikelihood[word];
+                }
+            }
+            return p;
+        }
+
+        document.getElementById('classifyBtn').addEventListener('click', () => {
+            const out = document.getElementById('result');
+            if (!model) {
+                out.textContent = 'Модель ще завантажується, спробуйте ще раз.';
+                return;
+            }
+            const p = naiveBayesPredict(document.getElementById('reviewInput').value);
+            const sentiment = p > 0 ? 'позитивна' : 'негативна';
+            out.textContent = `Визначена тональність: ${sentiment} (score = ${p.toFixed(2)})`;
+        });
+    </script>
+</body>
+</html>
