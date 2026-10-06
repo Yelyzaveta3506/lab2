@@ -1,59 +1,54 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>Наївний баєсів класифікатор рецензій</title>
+    <title>Наївний баєсів класифікатор</title>
 </head>
 <body>
     <h1>Наївний баєсів класифікатор, навчений у Python</h1>
-    <p>Введіть рецензію на фільм англійською мовою:</p>
-    <textarea id="reviewInput" rows="8" cols="70"></textarea><br>
-    <button id="classifyBtn">Визначити тональність</button>
+    <textarea id="tweetInput" rows="4" cols="50"></textarea><br>
+    <button onclick="classifyTweet()">Визначити тональність</button>
     <p id="result"></p>
 
-    <script type="module">
-        import { stemmer } from 'https://cdn.jsdelivr.net/npm/stemmer@2.0.1/+esm';
+    <script type="text/javascript">
+        let logprior;
+        let loglikelihood;
 
-        let model = null;
-
+        // Завантажити навчену модель із файлу JSON
         fetch('naive_bayes_model.json')
             .then(response => response.json())
-            .then(data => { model = data; });
- 
-        // Аналог process_review з Python
-        function processReview(text) {
-            const stop = new Set(model.stopwords);
-            return text
-                .toLowerCase()
-                .replace(/[’‘]/g, ' ')
-                .replace(/https?:\/\/\S+/g, ' ')
-                .replace(/[^a-z'\- ]+/g, ' ')
-                .split(/\s+/)
-                .filter(w => /[a-z]/.test(w) && !stop.has(w))
-                .map(w => stemmer(w));
+            .then(data => {
+                logprior = data.logprior;
+                loglikelihood = data.loglikelihood;
+            });
+
+        // Опрацювання повідомлення
+        function processTweet(tweet) {
+            // Тут явно варто її покращити
+            return tweet.toLowerCase().split(' ');
         }
 
-        // Аналог naive_bayes_predict з Python
-        function naiveBayesPredict(text) {
-            let p = model.logprior;
-            for (const word of processReview(text)) {
-                if (Object.prototype.hasOwnProperty.call(model.loglikelihood, word)) {
-                    p += model.loglikelihood[word];
+        // Наївний баєсів класифікатор
+
+        function naiveBayesPredict(tweet, logprior, loglikelihood) {
+            const words = processTweet(tweet);
+            let p = logprior;
+
+            for (const word of words) {
+                if (word in loglikelihood) {
+                    p += loglikelihood[word];
                 }
             }
+
             return p;
         }
 
-        document.getElementById('classifyBtn').addEventListener('click', () => {
-            const out = document.getElementById('result');
-            if (!model) {
-                out.textContent = 'Модель ще завантажується, спробуйте ще раз.';
-                return;
-            }
-            const p = naiveBayesPredict(document.getElementById('reviewInput').value);
-            const sentiment = p > 0 ? 'позитивна' : 'негативна';
-            out.textContent = `Визначена тональність: ${sentiment} (score = ${p.toFixed(2)})`;
-        });
+        function classifyTweet() {
+            const tweet = document.getElementById('tweetInput').value;
+            const prediction = naiveBayesPredict(tweet, logprior, loglikelihood);
+            const sentiment = prediction > 0 ? 'позитивна' : 'негативна';
+            document.getElementById('result').textContent = `Визначена тональність: ${sentiment}`;
+        }
     </script>
 </body>
 </html>
