@@ -25,7 +25,7 @@
             const stop = new Set(model.stopwords);
             return text
                 .toLowerCase()
-                .replace(/[’‘]/g, "'")
+                .replace(/[’‘]/g, ' ')
                 .replace(/https?:\/\/\S+/g, ' ')
                 .replace(/[^a-z'\- ]+/g, ' ')
                 .split(/\s+/)
